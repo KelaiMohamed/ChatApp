@@ -1,0 +1,73 @@
+<div class="container mx-auto mt-8 p-6 bg-gray-100 rounded-lg shadow-lg">
+  <h2 class="text-3xl font-bold mb-6 text-blue-600">My Contacts</h2>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <h3 class="text-xl font-semibold mb-4">{{ isEdit ? 'Update' : 'Create' }} Contact</h3>
+      <form (ngSubmit)="saveContact()" class="space-y-4">
+        <div class="mb-4">
+          <label for="name" class="block text-gray-700">Custom name:</label>
+          <input
+            id="name"
+            type="text"
+            [(ngModel)]="currentContact.name"
+            name="name"
+            required
+            class="input"
+          />
+        </div>
+        <div class="mb-4">
+          <label for="phoneNumber" class="block text-gray-700">Username:</label>
+          <input
+            id="phoneNumber"
+            type="tel"
+            [(ngModel)]="currentContact.username"
+            name="phoneNumber"
+            required
+            class="input"
+          />
+        </div>
+        <div class="flex justify-end space-x-4">
+          <button type="submit" class="btn-primary">
+            {{ isEdit ? "Update" : "Create" }}
+          </button>
+          <button type="button" class="btn-secondary" *ngIf="isEdit" (click)="cancelEdit()">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <h3 class="text-xl font-semibold mb-4">Contact List</h3>
+
+      <div class="overflow-auto max-h-80">
+        <table class="min-w-full">
+          <thead>
+          <tr>
+            <th class="py-3 px-6 text-left">Name</th>
+            <th class="py-3 px-6 text-left">Username</th>
+            <th class="py-3 px-6 text-left">Actions</th>
+          </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            @for (contact of contacts; track contact.id) {
+              <tr class="hover:bg-gray-50">
+                <td class="py-2 px-6">{{ contact.name }}</td>
+                <td class="py-2 px-6">{{ contact.username }}</td>
+                <td class="py-2 px-6 space-x-2">
+                  <button class="btn-secondary" (click)="editContact(contact.id)">
+                    Edit
+                  </button>
+                  <button class="btn-danger" (click)="deleteContact(contact.id)">
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
