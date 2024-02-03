@@ -3,7 +3,6 @@ package ma.fstt.backend.Message;
 
 import jakarta.persistence.*;
 import lombok.*;
-import ma.fstt.backend.User.User;
 
 @Data
 @Getter

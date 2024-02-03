@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, NgZone, OnInit} from '@angular/core';
 import {NgForOf, NgIf} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 import {Message} from "../models/message";
@@ -14,6 +14,7 @@ import {MessageService} from "../_service/message.service";
     NgForOf,
     FormsModule
   ],
+  changeDetection: ChangeDetectionStrategy.Default,
   templateUrl: './conversation.component.html',
   styleUrl: './conversation.component.css'
 })
@@ -25,32 +26,38 @@ export class ConversationComponent implements OnInit{
   messages: Message[] = [];
 
 
-  constructor(private contactService : ContactService, private messageService: MessageService) {
+  constructor(private contactService : ContactService, private messageService: MessageService, private ngZone: NgZone) {
   }
   sendMessage() {
 
     if(this.newMessageContent != ""){
-      this.messageService.createMessage(
-        new Message(this.newMessageContent,
-          new Date().getTime().toString(),
-          true,
-          this.selectedContact.username)).subscribe(
+      let message = new Message(this.newMessageContent,
+        new Date().getTime().toString(),
+        true,
+        this.selectedContact.username);
+
+      this.messageService.createMessage(message).subscribe(
         (response) => {
-          this.newMessageContent = "";
-          this.loadAllMessages();
-          this.selectContact(this.selectedContact);
+          this.ngZone.run(() => {
+            this.selectedContactMessages.push(message);
+            this.newMessageContent = "";
+          });
+
         },
         (error) => {
           console.log(error)
         }
       );
     }
-
   }
 
   selectContact(contact: Contact) {
+
     this.selectedContact = contact;
     this.selectedContactMessages = [];
+
+    this.loadAllMessages();
+
     this.messages.forEach(message =>{
       if(message.otherUsername === contact.username){
         this.selectedContactMessages.push(message);
@@ -86,4 +93,6 @@ export class ConversationComponent implements OnInit{
     });
 
   }
+
+
 }
